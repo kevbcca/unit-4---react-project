@@ -1,21 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import './App.css';
 
-// Simple helper to normalize strings for comparison
-function normalize(s) {
-  return (s || '')
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/\p{Diacritic}+/gu, '')
-    .replace(/[^a-z\s-]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
 function App() {
   const [countries, setCountries] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(null);
-  const [guess, setGuess] = useState('');
+  // const [guess, setGuess] = useState('');   (used for when program had text input)
   const [feedback, setFeedback] = useState('');
   const [status, setStatus] = useState('loading'); // loading | ready | error
   const [score, setScore] = useState(0);
@@ -25,7 +14,7 @@ function App() {
   const [locked, setLocked] = useState(false); // lock after selection until next
   const inputRef = useRef(null);
 
-  // Fetch countries on mount
+  // Fetch countries
   useEffect(() => {
     async function fetchCountries() {
       try {
@@ -87,7 +76,7 @@ function App() {
     setLocked(false);
   }, [current, countries]);
 
-  function selectOption(opt) {
+  function selectOption(opt) {   // select option and lock it for next guess
     if (!current || locked) return;
     setSelected(opt);
     setLocked(true);
@@ -101,14 +90,14 @@ function App() {
     setAttempts((a) => a + 1);
     setTimeout(() => {
       setFeedback('');
-      setGuess('');
+      // setGuess('');    (was used when game had text input)
       setCurrentIdx((idx) => ((idx + 1) % countries.length));
     }, isCorrect ? 900 : 1200);
   }
 
   function nextFlag() {
     setFeedback('');
-    setGuess('');
+    // setGuess('');    (was used when game had text input)
     setAttempts((a) => a + 1); // count skip as an attempt
     setCurrentIdx((idx) => ((idx == null ? 0 : (idx + 1) % countries.length)));
     inputRef.current?.focus();
@@ -117,7 +106,7 @@ function App() {
   if (status === 'loading') {
     return <div className="App"><div className="container"><p>Loading flags…</p></div></div>;
   }
-  if (status === 'error') {
+  if (status === 'error') {   //error message
     return (
       <div className="App">
         <div className="container">
@@ -130,7 +119,7 @@ function App() {
     return <div className="App"><div className="container"><p>No data.</p></div></div>;
   }
 
-  // add timer, progressively gets harder (decided not too)
+  // add timer, progressively gets harder --- (decided not too since it might make the game hard)
 
   return (
     <div className="App">
